@@ -3,7 +3,7 @@ const geminiModel = require("./config/genaimodel");
 async function getResponseText(prompt) {
   const result = await geminiModel.generateContent(prompt);
   return result.response.text();
-} 
+}
 
 const chat = geminiModel.startChat({
   history: [],
@@ -12,15 +12,16 @@ const chat = geminiModel.startChat({
   },
 });
 
-async function getResponse(prompt,res) {
+async function getResponse(prompt, res) {
   const result = await chat.sendMessageStream(prompt);
   let text = "";
-  for await(const chunk of result.stream){
+  for await (const chunk of result.stream) {
     const chunkText = await chunk.text();
-    console.log("AI: ",chunkText);
+    console.log("AI: ", chunkText);
     res.write(chunkText);
+    res.flush();
     text += chunkText;
-  };
+  }
   // const response = await result.response;
   // const text = await response.text();
   // chat.getHistory().then((val) => {

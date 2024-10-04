@@ -4,15 +4,15 @@ const cors = require("cors");
 const logger = require("./utils/logger");
 require("dotenv").config();
 const chat = require("./routes/chat");
-const connectDB = require('./db/connect.js');
-
+const connectToDb = require("./config/db_config");
+const compression = require("compression");
 // Initialize Express app
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
-
+app.use(compression());
 // Initialize OpenAI
 // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -32,18 +32,11 @@ const port = process.env.PORT || 5000;
 
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URI);
+    await connectToDb(process.env.MONGO_URI);
     console.log("Database connected successfully!");
 
     app.listen(port, async () => {
       console.log(`Server is listening on port ${port}...`);
-      
-      try {
-        const val = await getResponseText("Hello");
-        console.log(val);
-      } catch (err) {
-        console.error("Error fetching response text:", err);
-      }
     });
   } catch (error) {
     console.log(error);
