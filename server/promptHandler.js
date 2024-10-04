@@ -13,21 +13,26 @@ const chat = geminiModel.startChat({
 });
 
 async function getResponse(prompt, res) {
-  const result = await chat.sendMessageStream(prompt);
-  let text = "";
-  for await (const chunk of result.stream) {
-    const chunkText = await chunk.text();
-    console.log("AI: ", chunkText);
-    res.write(chunkText);
-    res.flush();
-    text += chunkText;
+  try {
+    const result = await chat.sendMessageStream(prompt);
+    let text = "";
+    for await (const chunk of result.stream) {
+      const chunkText = await chunk.text();
+      console.log("AI: ", chunkText);
+      res.write(JSON.stringify({ success: true, data: chunkText }));
+      res.flush();
+      text += chunkText;
+    }
+    // const response = await result.response;
+    // const text = await response.text();
+    // chat.getHistory().then((val) => {
+    //   console.log(val);
+    // });
+    return text;
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false });
   }
-  // const response = await result.response;
-  // const text = await response.text();
-  // chat.getHistory().then((val) => {
-  //   console.log(val);
-  // });
-  return text;
 }
 
 module.exports = {
