@@ -4,6 +4,7 @@ const cors = require("cors");
 // const logger = require("./utils/logger");
 require("dotenv").config();
 const chat = require("./routes/chat");
+const userRoutes = require("./routes/user");
 
 const connectToDb = require("./config/db_config");
 const compression = require("compression");
@@ -23,7 +24,7 @@ app.use(compression());
 //   // TODO: Implement the chat functionality
 // });
 app.use("/api/v1/chat", chat);
-
+app.use("/api/v1/users", userRoutes);
 // GET endpoint to handle chat
 // app.get("/stream", async (req) => {
 //   // TODO: Stream the response back to the client
