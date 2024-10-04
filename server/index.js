@@ -1,11 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const logger = require("./utils/logger");
+// const logger = require("./utils/logger");
 require("dotenv").config();
 const chat = require("./routes/chat");
+
 const connectToDb = require("./config/db_config");
 const compression = require("compression");
+
 // Initialize Express app
 const app = express();
 app.use(cors());
@@ -23,9 +25,9 @@ app.use(compression());
 app.use("/api/v1/chat", chat);
 
 // GET endpoint to handle chat
-app.get("/stream", async (req, res) => {
-  // TODO: Stream the response back to the client
-});
+// app.get("/stream", async (req) => {
+//   // TODO: Stream the response back to the client
+// });
 
 // Start the server
 const port = process.env.PORT || 5000;
