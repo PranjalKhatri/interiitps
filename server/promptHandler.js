@@ -1,8 +1,8 @@
 const geminiModel = require("./config/genaimodel");
 
-async function getresponse(prompt) {
+async function getResponseText(prompt) {
   const result = await geminiModel.generateContent(prompt);
   return result.response.text();
 }
 
-module.exports = getresponse;
+module.exports = getResponseText;
