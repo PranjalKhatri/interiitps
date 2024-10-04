@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const OpenAI = require("openai");
+const logger = require("./utils/logger");
 require("dotenv").config();
 
 // Initialize Express app
@@ -10,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Initialize OpenAI
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // POST endpoint to handle chat
 app.post("/chat", async (req, res) => {
@@ -25,5 +26,5 @@ app.get("/stream", async (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`server is running on port ${PORT}`);
 });
