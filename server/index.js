@@ -4,7 +4,7 @@ const cors = require("cors");
 const logger = require("./utils/logger");
 const getResponseText = require("./prompthandler");
 require("dotenv").config();
-const chat  = require('./routes/chat')
+const chat = require("./routes/chat");
 
 // Initialize Express app
 const app = express();
@@ -20,7 +20,7 @@ app.use(bodyParser.text());
 // app.post("/chat", async (req, res) => {
 //   // TODO: Implement the chat functionality
 // });
-app.use("/api/v1/chat",chat)
+app.use("/api/v1/chat", chat);
 
 // GET endpoint to handle chat
 app.get("/stream", async (req, res) => {
@@ -31,7 +31,7 @@ app.get("/stream", async (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   logger.info(`server is running on port ${PORT}`);
-  getResponseText("Hello").then((val)=>{
+  getResponseText("Hello").then((val) => {
     console.log(val);
-  })
+  });
 });

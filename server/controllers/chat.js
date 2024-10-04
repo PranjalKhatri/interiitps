@@ -1,14 +1,14 @@
-const prompthandler = require('../promptHandler');
+const prompthandler = require("../promptHandler");
 
 const chat = async (req, res) => {
-    const prompt = req.body.prompt;
-    console.log(prompt);
+  const prompt = req.body.prompt;
+  console.log(prompt);
 
-    const ans = await prompthandler(prompt);
-    console.log(ans);
+  const ans = await prompthandler(prompt);
+  console.log(ans);
 
-    res.json({ message: "hello" });
-}
+  res.json({ message: "hello" });
+};
 module.exports = {
-    chat
-}
+  chat,
+};
