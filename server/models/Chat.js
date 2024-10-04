@@ -7,6 +7,7 @@ const Chatschema = new mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : 'User',
         required : true,
+        index : true,
     },
 
     role : {
