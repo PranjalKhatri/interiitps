@@ -5,4 +5,31 @@ async function getResponseText(prompt) {
   return result.response.text();
 }
 
-module.exports = getResponseText;
+const chat = geminiModel.startChat({
+  history: [],
+  generationConfig: {
+    maxOutputTokens: 500,
+  },
+});
+
+async function getResponse(prompt,res) {
+  const result = await chat.sendMessageStream(prompt);
+  let text = "";
+  for await(const chunk of result.stream){
+    const chunkText = await chunk.text();
+    console.log("AI: ",chunkText);
+    res.write(chunkText);
+    text += chunkText;
+  };
+  // const response = await result.response;
+  // const text = await response.text();
+  // chat.getHistory().then((val) => {
+  //   console.log(val);
+  // });
+  return text;
+}
+
+module.exports = {
+  getResponseText,
+  getResponse,
+};
