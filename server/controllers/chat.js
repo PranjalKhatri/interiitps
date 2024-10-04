@@ -1,4 +1,8 @@
-const { getResponseText, getMultiResponse } = require("../promptHandler.js");
+const {
+  getResponseText,
+  getMultiResponse,
+  getResponse,
+} = require("../promptHandler.js");
 const geminiModel = require("../config/genaimodel.js");
 const User = require("../models/User.js");
 const Chat = require("../models/Chat.js");
@@ -32,7 +36,6 @@ const startChat = geminiModel.startChat({
   },
 });
 
-
 const chat = async (req, res) => {
   const prompt = req.body.prompt;
   try {
@@ -49,26 +52,28 @@ const chat = async (req, res) => {
   }
 };
 
-// Set headers for streaming response
-// res.setHeader('Content-Type', 'text/event-stream');
-// res.setHeader('Cache-Control', 'no-cache');
-// res.setHeader('Connection', 'keep-alive');
+const stream = async (req, res) => {
+  const prompt = req.body.prompt;
+  // Set headers for streaming response
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  // Start getting the response
+  res.setHeader("Content-Type", "text/plain");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
 
-// Start getting the response
-// getResponseText(prompt).then(()=>{res.end();});
-// const ans = getMultiResponse(prompt);
-
-// ans.then((val) => {
-//   console.log(val);
-//   res.json({
-//     message: val,
-//   });
-// }).catch((error) => {
-//   // console.log("Error:", error);
-//   res.status(500).json({
-//     message: "Some error has occurred!",
-//   });
-// });
+  // Start getting the response
+  getResponse(prompt, res).then(() => {
+    res.end();
+  });
+  // const text = getResponseText(prompt);
+  // text.then((val) => {
+  //   console.log(val);
+  // });
+  // End the response after the stream is complete
+  // res.json({ success: "True" });
+};
 
 const getChat = async (req, res) => {
   try {
@@ -97,21 +102,8 @@ const getChat = async (req, res) => {
   }
 };
 
-//   res.setHeader("Content-Type", "text/plain");
-//   res.setHeader("Cache-Control", "no-cache");
-//   res.setHeader("Connection", "keep-alive");
-
-//   // Start getting the response
-//   getResponse(prompt, res).then(() => {
-//     res.end();
-//   });
-// const text = getResponseText(prompt);
-// text.then((val)=>{console.log(val)})
-// End the response after the stream is complete
-// res.json({"success":"True"});
-// };
-
 module.exports = {
   chat,
   getChat,
+  stream,
 };

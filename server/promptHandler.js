@@ -48,25 +48,8 @@ async function getResponse(prompt, res) {
   }
 }
 
-
-// async function getResponse(prompt,res) {
-//   const result = await chat.sendMessageStream(prompt);
-//   let text = "";
-//   for await(const chunk of result.stream){
-//     const chunkText = await chunk.text();
-//     console.log("AI: ",chunkText);
-//     res.write(chunkText);
-//     text += chunkText;
-//   };
-//   // const response = await result.response;
-//   // const text = await response.text();
-//   // chat.getHistory().then((val) => {
-//   //   console.log(val);
-//   // });
-//   return text;
-// }
-
 module.exports = {
   getResponseText, 
   getMultiResponse,
+  getResponse
 };
