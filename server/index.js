@@ -2,9 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const logger = require("./utils/logger");
-const getResponseText = require("./prompthandler");
 require("dotenv").config();
-const chat  = require('./routes/chat')
+const chat = require("./routes/chat");
 const connectDB = require('./db/connect.js');
 
 // Initialize Express app
@@ -21,7 +20,7 @@ app.use(bodyParser.text());
 // app.post("/chat", async (req, res) => {
 //   // TODO: Implement the chat functionality
 // });
-app.use("/api/v1/chat",chat)
+app.use("/api/v1/chat", chat);
 
 // GET endpoint to handle chat
 app.get("/stream", async (req, res) => {

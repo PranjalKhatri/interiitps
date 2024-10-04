@@ -16,7 +16,7 @@ const logFormat = winston.format.combine(
   }),
   winston.format.printf(({ timestamp, level, message }) => {
     return `[${timestamp}] [${level}]: ${message}`; // Format with square brackets
-  })
+  }),
 );
 
 const logger = winston.createLogger({
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV !== "production") {
   logger.add(
     new winston.transports.Console({
       format: logFormat, // Apply the custom format to console logs as well
-    })
+    }),
   );
 }
 
