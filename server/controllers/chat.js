@@ -7,8 +7,9 @@ const chat = async (req, res) => {
     const ans = await prompthandler(prompt);
     console.log(ans);
 
-    res.json({ message: "hello" });
+    res.json({ message: ans });
 }
 module.exports = {
     chat
 }
+

@@ -5,6 +5,7 @@ const logger = require("./utils/logger");
 const getResponseText = require("./prompthandler");
 require("dotenv").config();
 const chat  = require('./routes/chat')
+const connectDB = require('./db/connect.js');
 
 // Initialize Express app
 const app = express();
@@ -28,10 +29,26 @@ app.get("/stream", async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  logger.info(`server is running on port ${PORT}`);
-  getResponseText("Hello").then((val)=>{
-    console.log(val);
-  })
-});
+const port = process.env.PORT || 5000;
+
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URI);
+    console.log("Database connected successfully!");
+
+    app.listen(port, async () => {
+      console.log(`Server is listening on port ${port}...`);
+      
+      try {
+        const val = await getResponseText("Hello");
+        console.log(val);
+      } catch (err) {
+        console.error("Error fetching response text:", err);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+start();
