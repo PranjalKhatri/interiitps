@@ -5,6 +5,7 @@ const OpenAI = require("openai");
 const logger = require("./utils/logger");
 const getresponse = require("./prompthandler");
 require("dotenv").config();
+const chat = require('./routes/chat.js')
 
 // Initialize Express app
 const app = express();
