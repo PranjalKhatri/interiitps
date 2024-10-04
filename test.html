@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Stream</title>
+</head>
+<body>
+    <pre id="response"></pre>
+
+    <script>
+        const responseDiv = document.getElementById('response');
+        
+        const sendMessage = async (prompt) => {
+            const response = await fetch('http://localhost:3000/api/v1/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt })
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value, { stream: true });
+                responseDiv.textContent += chunk + '\n';
+            }
+        };
+
+        sendMessage("Hello tell about wonders of world!");
+    </script>
+</body>
+</html>

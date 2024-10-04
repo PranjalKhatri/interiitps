@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 // const bcrypt = require('bcryptjs');
 // const jwt = require('jsonwebtoken');
 
@@ -30,8 +30,6 @@ const Chatschema = new mongoose.Schema({
         default: Date.now
     }
 
-
 });
 
-module.exports = mongoose.model('Chat' , Chatschema);
-
+module.exports = mongoose.model("Chat", Chatschema);
