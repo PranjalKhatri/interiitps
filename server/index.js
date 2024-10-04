@@ -9,14 +9,17 @@ require("dotenv").config();
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.text());
 
 // Initialize OpenAI
 // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // POST endpoint to handle chat
-app.post("/chat", async (req, res) => {
-  // TODO: Implement the chat functionality
-});
+// app.post("/chat", async (req, res) => {
+//   // TODO: Implement the chat functionality
+// });
+app.use("/api/v1/chat",chat)
 
 // GET endpoint to handle chat
 app.get("/stream", async (req, res) => {
@@ -31,3 +34,4 @@ app.listen(PORT, () => {
     console.log(val);
   })
 });
+
