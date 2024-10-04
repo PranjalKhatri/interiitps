@@ -1,10 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const OpenAI = require("openai");
 const logger = require("./utils/logger");
-const getresponse = require("./prompthandler");
+const getResponseText = require("./prompthandler");
 require("dotenv").config();
+const chat  = require('./routes/chat')
 
 // Initialize Express app
 const app = express();
@@ -31,8 +31,7 @@ app.get("/stream", async (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   logger.info(`server is running on port ${PORT}`);
-  getresponse("Hello").then((val)=>{
+  getResponseText("Hello").then((val)=>{
     console.log(val);
   })
 });
-

@@ -2,6 +2,6 @@ const express = require('express')
 const router = express.Router()
 const { chat } = require('../controllers/chat.js')
 
-router.get('/', chat)
+router.post('/', chat)
 
 module.exports = router
