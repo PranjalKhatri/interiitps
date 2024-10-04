@@ -15,15 +15,9 @@ const chat = async (req, res) => {
   // End the response after the stream is complete
   // res.json({"success":"True"});
 };
-    const ans = await prompthandler(prompt);
-    console.log(ans);
-
-    res.json({ message: ans });
-}
+    
 module.exports = {
   chat,
 };
 
-    chat
-}
 
