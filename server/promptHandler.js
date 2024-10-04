@@ -5,4 +5,4 @@ async function getResponseText(prompt) {
   return result.response.text();
 }
 
-module.exports = { getResponseText };
+module.exports = getResponseText;
