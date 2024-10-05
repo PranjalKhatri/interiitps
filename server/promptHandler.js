@@ -1,5 +1,5 @@
-const geminiModel = require("./config/genaimodel");
-
+const { geminiModel } = require("./config/genaimodel");
+const fs = require("fs");
 async function getResponseText(prompt) {
   const result = await geminiModel.generateContent(prompt);
   return result.response.text();
@@ -49,8 +49,36 @@ async function getResponse(prompt, res, history = []) {
   }
 }
 
+// function fileToGenerativePart(path, mimeType) {
+//   return {
+//     inlineData: {
+//       data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+//       mimeType,
+//     },
+//   };
+// }
+
+function fileToGenerativePart(buffer, mimeType) {
+  return {
+    inlineData: {
+      data: buffer.toString('base64'),
+      mimeType,
+    },
+  };
+}
+
+async function filePrompt(prompt,file,mimeType){
+  const imageParts = [fileToGenerativePart(file,mimeType)];
+  // console.log(imageParts);
+  const result= await geminiModel.generateContent([prompt,...imageParts]);
+  const response = await result.response;
+  console.log(response.text());
+  return response.text();
+}
+
 module.exports = {
   getResponseText,
   getMultiResponse,
   getResponse,
+  filePrompt,
 };
