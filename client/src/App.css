@@ -1,5 +1,11 @@
 /* src/App.css */
-body {
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* body {
   margin: 0;
   padding: 0;
   font-family: 'Arial', sans-serif;
@@ -93,4 +99,4 @@ h1 {
 
 .button:hover:enabled {
   background-color: #0056b3;
-}
+} */
