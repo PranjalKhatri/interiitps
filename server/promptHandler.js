@@ -41,11 +41,6 @@ async function getResponse(prompt, res, history = []) {
       res.flush();
       text += chunkText;
     }
-    // const response = await result.response;
-    // const text = await response.text();
-    // chat.getHistory().then((val) => {
-    //   console.log(val);
-    // });
     return text;
   } catch (err) {
     console.log(err);

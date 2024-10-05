@@ -4,8 +4,8 @@ const { chat, getChat, stream,getAllChats } = require("../controllers/chat");
 const authenticateUser = require("../middleware/user");
 
 router.post("/", authenticateUser, chat);
-router.get("/:userID", authenticateUser, getChat);
+// router.get("/", authenticateUser, getChat);
 router.post("/stream/", authenticateUser, stream);
-router.get("/", getAllChats);
+// router.get("/", getAllChats);
 
 module.exports = router;

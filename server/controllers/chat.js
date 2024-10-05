@@ -12,14 +12,36 @@ const Chat = require("../models/Chat.js");
 //   return result.response.text();
 // }
 
+const getChat = async (userID) => {
+  try {
+    const chats = await Chat.find({ userId: userID }).sort({ createdAt: 1 });
+
+    if (chats.length > 0) {
+      const history = chats.map(chat => ({
+        role: chat.role,
+        parts: chat.parts,
+      }));
+      console.log("history one: ",history);
+      return history; // Return the history array
+    } else {
+      return null; // Return null if no chats found
+    }
+
+  // eslint-disable-next-line no-unused-vars
+  } catch (error) {
+    throw new Error("Failed to retrieve chat history");
+  }
+};
+
 const chat = async (req, res) => {
   const prompt = req.body.prompt;
   console.log("Prompt is: ", prompt);
   const newChat = req.body.newChat;
+  console.log(newChat);
   let history = [];
 
   if (!newChat) {
-    const userID = req.body.userID;
+    const userID = req.user.userId;
 
     try {
       const oldChats = await getChat(userID);
@@ -58,13 +80,13 @@ const chat = async (req, res) => {
     console.log("AI: ", text);
 
     const userChat = new Chat({
-      userId: req.body.userID,
+      userId: req.user.userId,
       role: "user",
       parts: [{ text: prompt }],
     });
 
     const modelChat = new Chat({
-      userId: req.body.userID,
+      userId: req.user.userId,
       role: "model",
       parts: [{ text: text }],
     });
@@ -83,9 +105,9 @@ const chat = async (req, res) => {
 const stream = async (req, res) => {
   const userId = req.user.userId;
   console.log(userId);
-  const useHistory = req.body.useHistory | false;
+  const newChat = req.body.useHistory | false;
   let history = [];
-  if (useHistory) {
+  if (!newChat) {
     console.log("using history");
     const allHistory = await Chat.find({ userId: userId });
     // for await (const dat of allHistory) {
