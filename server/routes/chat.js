@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {deleteChat, stream } = require("../controllers/chat");
-// const authenticateUser = require("../middleware/user");
+const authenticateUser = require("../middleware/user");
 
 router.post("/", stream);
 
