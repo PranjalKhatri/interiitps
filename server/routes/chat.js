@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { chat, getChat, stream } = require("../controllers/chat.js");
+const { chat, getChat, stream } = require("../controllers/chat");
+const authenticateUser = require("../middleware/user");
 
-router.post("/", chat);
-router.get("/:userID", getChat);
-router.post("/stream/:userID", stream);
+router.post("/", authenticateUser, chat);
+router.get("/:userID", authenticateUser, getChat);
+router.post("/stream/", authenticateUser, stream);
 
 module.exports = router;

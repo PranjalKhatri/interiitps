@@ -53,6 +53,20 @@ const chat = async (req, res) => {
 };
 
 const stream = async (req, res) => {
+  const userId = req.user.userId;
+  console.log(userId);
+  const useHistory = req.body.useHistory | false;
+  let history = [];
+  if (useHistory) {
+    console.log("using history");
+    const allHistory = await Chat.find({ userId: userId });
+    for await (const dat of allHistory) {
+      console.log(dat.parts);
+      history.push({ role: dat.role, parts: [{ text: dat.parts[0].text }] });
+    }
+    await console.log(history);
+  }
+
   const prompt = req.body.prompt;
   // Set headers for streaming response
   res.setHeader("Content-Type", "text/event-stream");
@@ -64,7 +78,7 @@ const stream = async (req, res) => {
   res.setHeader("Connection", "keep-alive");
 
   // Start getting the response
-  getResponse(prompt, res).then(() => {
+  getResponse(prompt, res, history).then(() => {
     res.end();
   });
   // const text = getResponseText(prompt);

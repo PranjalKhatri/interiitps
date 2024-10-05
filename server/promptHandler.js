@@ -4,7 +4,6 @@ async function getResponseText(prompt) {
   const result = await geminiModel.generateContent(prompt);
   return result.response.text();
 }
-
 const chat = geminiModel.startChat({
   history: [],
   generationConfig: {
@@ -19,15 +18,21 @@ async function getMultiResponse(prompt) {
     const response = result.response;
     const text = response.text();
     console.log("AI: ", text);
-    return text; 
+    return text;
   } catch (error) {
     console.error("Error fetching AI response:", error);
     throw error;
   }
 }
-async function getResponse(prompt, res) {
+async function getResponse(prompt, res, history = []) {
   try {
-    const result = await chat.sendMessageStream(prompt);
+    const conversationSession = geminiModel.startChat({
+      history: history,
+      generationConfig: {
+        maxOutputTokens: 500,
+      },
+    });
+    const result = await conversationSession.sendMessageStream(prompt);
     let text = "";
     for await (const chunk of result.stream) {
       const chunkText = await chunk.text();
@@ -49,7 +54,7 @@ async function getResponse(prompt, res) {
 }
 
 module.exports = {
-  getResponseText, 
+  getResponseText,
   getMultiResponse,
-  getResponse
+  getResponse,
 };
