@@ -12,43 +12,71 @@ const Chat = require("../models/Chat.js");
 //   return result.response.text();
 // }
 
-const startChat = geminiModel.startChat({
-  history: [
-    {
-      role: "user",
-      parts: [
-        {
-          text: "Hello,my name is dhruv.",
-        },
-      ],
-    },
-    {
-      role: "model",
-      parts: [
-        {
-          text: "Great to meet you, Dhruv.",
-        },
-      ],
-    },
-  ],
-  generationConfig: {
-    maxOutputTokens: 500,
-  },
-});
-
 const chat = async (req, res) => {
   const prompt = req.body.prompt;
+  console.log("Prompt is: ", prompt);
+  const newChat = req.body.newChat;
+  let history = [];
+
+  if (!newChat) {
+    const userID = req.body.userID;
+
+    try {
+      const oldChats = await getChat(userID);
+      history = oldChats;
+      console.log("oldChats 1st is: ", oldChats);
+
+      if (!oldChats) {
+        // return res.json({ message: "oldChats not found" }); // Send response if no history
+        history = [];
+      }
+    } catch (error) {
+      console.error("Error retrieving chat history:", error);
+      return res.status(500).json({ message: "Error retrieving chat history" });
+    }
+  }
+
+  const finalHistory = history.map((item) => ({
+    role: item.role,
+    parts: [{ text: item.parts[0].text }],
+  }));
+
+  console.log("final history is: ", finalHistory);
+
+  const startChat = geminiModel.startChat({
+    history: newChat ? [] : finalHistory, // Use retrieved history or an empty array
+    generationConfig: {
+      maxOutputTokens: 500,
+    },
+  });
+
   try {
     console.log("User: ", prompt);
     const result = await startChat.sendMessage(prompt);
     const response = result.response;
-    const text = response.text();
+    const text = await response.text(); // Ensure you await this call
     console.log("AI: ", text);
-    res.json({
-      message: text,
+
+    const userChat = new Chat({
+      userId: req.body.userID,
+      role: "user",
+      parts: [{ text: prompt }],
     });
+
+    const modelChat = new Chat({
+      userId: req.body.userID,
+      role: "model",
+      parts: [{ text: text }],
+    });
+
+    // Save the chats to the database
+    await userChat.save();
+    await modelChat.save();
+
+    return res.json({ message: text }); // Return the AI response
   } catch (error) {
-    console.error("Error fetching AI response:", error);
+    console.error("Error in chat processing:", error);
+    return res.status(500).json({ message: "Error processing chat" });
   }
 };
 
@@ -60,10 +88,14 @@ const stream = async (req, res) => {
   if (useHistory) {
     console.log("using history");
     const allHistory = await Chat.find({ userId: userId });
-    for await (const dat of allHistory) {
-      console.log(dat.parts);
-      history.push({ role: dat.role, parts: [{ text: dat.parts[0].text }] });
-    }
+    // for await (const dat of allHistory) {
+    //   console.log(dat.parts);
+    //   history.push({ role: dat.role, parts: [{ text: dat.parts[0].text }] });
+    // }
+    history = allHistory.map((dat) => ({
+      role: dat.role,
+      parts: [{ text: dat.parts[0].text }],
+    }));
     await console.log(history);
   }
 
@@ -81,43 +113,18 @@ const stream = async (req, res) => {
   getResponse(prompt, res, history).then(() => {
     res.end();
   });
-  // const text = getResponseText(prompt);
-  // text.then((val) => {
-  //   console.log(val);
-  // });
-  // End the response after the stream is complete
-  // res.json({ success: "True" });
 };
 
-const getChat = async (req, res) => {
-  try {
-    const userID = req.params.userID;
-    const chat = await Chat.find({ userId: userID });
-    if (chat) {
-      const { role, parts } = chat;
+const getAllChats = async (req, res) => {
+  const userID = "6700be9f3bff66d6fb71385a";
 
-      const history = {
-        role: role,
-        parts: parts,
-      };
-
-      console.log(history);
-
-      return res.json({ history });
-    }
-
-    return res.json({
-      message: "Chat not found",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error,
-    });
-  }
+  const chats = await Chat.find({ userId: userID });
+  console.log(chats);
+  res.json(chats);
 };
 
 module.exports = {
   chat,
-  getChat,
+  getAllChats,
   stream,
 };
