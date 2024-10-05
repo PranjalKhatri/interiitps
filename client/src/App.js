@@ -12,7 +12,7 @@ function App() {
   const chatEndRef = useRef(null);
   const notificationTimeoutRef = useRef(null); // Ref for notification timeout
 
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://interiitps.onrender.com';
 
   // Highlight.js extension for showdown
   const codeHighlightExtension = () => {
