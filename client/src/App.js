@@ -12,7 +12,7 @@ function App() {
   const chatEndRef = useRef(null);
   const notificationTimeoutRef = useRef(null); // Ref for notification timeout
 
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6000';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
 
   // Highlight.js extension for showdown
   const codeHighlightExtension = () => {
@@ -35,7 +35,7 @@ function App() {
   const askQuestionStream = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${backendUrl}/api/v1/chat/`, {
+      const response = await fetch(`${backendUrl}/api/v1/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
