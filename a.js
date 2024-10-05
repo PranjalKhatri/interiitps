@@ -2,7 +2,6 @@ const {
   getResponseText,
   getMultiResponse,
   getResponse,
-  filePrompt,
 } = require("../promptHandler.js");
 const geminiModel = require("../config/genaimodel.js");
 const User = require("../models/User.js");
@@ -13,36 +12,14 @@ const Chat = require("../models/Chat.js");
 //   return result.response.text();
 // }
 
-const getChat = async (userID) => {
-  try {
-    const chats = await Chat.find({ userId: userID }).sort({ createdAt: 1 });
-
-    if (chats.length > 0) {
-      const history = chats.map((chat) => ({
-        role: chat.role,
-        parts: chat.parts,
-      }));
-      console.log("history one: ", history);
-      return history; // Return the history array
-    } else {
-      return null; // Return null if no chats found
-    }
-
-    // eslint-disable-next-line no-unused-vars
-  } catch (error) {
-    throw new Error("Failed to retrieve chat history");
-  }
-};
-
 const chat = async (req, res) => {
   const prompt = req.body.prompt;
   console.log("Prompt is: ", prompt);
   const newChat = req.body.newChat;
-  console.log(newChat);
   let history = [];
 
   if (!newChat) {
-    const userID = req.user.userId;
+    const userID = req.body.userID;
 
     try {
       const oldChats = await getChat(userID);
@@ -81,13 +58,13 @@ const chat = async (req, res) => {
     console.log("AI: ", text);
 
     const userChat = new Chat({
-      userId: req.user.userId,
+      userId: req.body.userID,
       role: "user",
       parts: [{ text: prompt }],
     });
 
     const modelChat = new Chat({
-      userId: req.user.userId,
+      userId: req.body.userID,
       role: "model",
       parts: [{ text: text }],
     });
@@ -106,9 +83,9 @@ const chat = async (req, res) => {
 const stream = async (req, res) => {
   const userId = req.user.userId;
   console.log(userId);
-  const newChat = req.body.useHistory | false;
+  const useHistory = req.body.useHistory | false;
   let history = [];
-  if (!newChat) {
+  if (useHistory) {
     console.log("using history");
     const allHistory = await Chat.find({ userId: userId });
     // for await (const dat of allHistory) {
@@ -133,8 +110,7 @@ const stream = async (req, res) => {
   res.setHeader("Connection", "keep-alive");
 
   // Start getting the response
-  getResponse(prompt, res, history).then((val) => {
-    console.log(val);
+  getResponse(prompt, res, history).then(() => {
     res.end();
   });
 };
@@ -147,24 +123,8 @@ const getAllChats = async (req, res) => {
   res.json(chats);
 };
 
-const uploadFile = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).send("No file uploaded.");
-  }
-
-  // Get the file's buffer and mimetype
-  const fileBuffer = req.file.buffer;
-  const mimeType = req.file.mimetype;
-  console.log(fileBuffer);
-  // Call the function to convert the file
-  const response = await filePrompt(req.body.prompt, fileBuffer, mimeType);
-  // Respond with success
-  res.json({ response });
-};
-
 module.exports = {
   chat,
   getAllChats,
   stream,
-  uploadFile,
 };
