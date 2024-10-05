@@ -1,12 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
-const { chat, getChat, stream,getAllChats,uploadFile,deleteChat } = require("../controllers/chat");
-
+const {deleteChat, stream } = require("../controllers/chat");
 const authenticateUser = require("../middleware/user");
-const multer = require('multer');
-
-const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage to avoid saving the file locally
 
 router.post("/", stream);
 

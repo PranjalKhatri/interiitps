@@ -1,11 +1,8 @@
 const {
-  getResponseText,
-  getMultiResponse,
   getResponse,
   filePrompt,
 } = require("../promptHandler.js");
 const geminiModel = require("../config/genaimodel.js");
-const User = require("../models/User.js");
 const Chat = require("../models/Chat.js");
 
 // async function getResponseText(prompt) {
