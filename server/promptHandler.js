@@ -37,10 +37,11 @@ async function getResponse(prompt, res, history = []) {
     for await (const chunk of result.stream) {
       const chunkText = await chunk.text();
       console.log("AI: ", chunkText);
-      res.write(JSON.stringify({ success: true, data: chunkText }));
+      res.write(JSON.stringify({ data: chunkText }));
       res.flush();
       text += chunkText;
     }
+    console.log("text is : ",text);
     return text;
   } catch (err) {
     console.log(err);

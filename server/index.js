@@ -31,7 +31,7 @@ app.use("/api/v1/users", userRoutes);
 // });
 
 // Start the server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 9000;
 
 const start = async () => {
   try {
