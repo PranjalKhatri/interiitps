@@ -315,7 +315,7 @@ const uploadFile = async (req, res) => {
 
 
 const deleteChat = async (req, res) => {
-  const userID = req.params.userID;
+  const userID = req.user.userId;
   console.log(userID);
   try {
     const deletedChats = await Chat.deleteMany({ userId: userID });
