@@ -166,7 +166,7 @@ function Chat() {
   const deleteChat = async () => {
     setLoading(true);
     try {
-      const response = await axios.delete(`${backendUrl}/api/v1/chat/6700be9f3bff66d6fb71385a`);
+      const response = await axios.delete(`${backendUrl}/api/v1/chat/`);
       if (response.status === 200) {
         setConversation([]);
         alert('Chats deleted successfully!');
