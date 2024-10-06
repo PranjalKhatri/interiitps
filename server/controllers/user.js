@@ -53,8 +53,8 @@ const loginUser = async (req, res) => {
     // Set the token as a cookie with security options
     res.cookie("token", token, {
       httpOnly: true, // Inaccessible to JavaScript on the frontend
-      secure: false, // Enable secure in production
-      sameSite: 'Strict', // Prevents CSRF attacks
+      secure: true, // Enable secure in production
+      sameSite: 'None', // Prevents CSRF attacks
       maxAge: 24 * 60 * 60 * 1000, // Set cookie to expire in 1 day
     });
 
