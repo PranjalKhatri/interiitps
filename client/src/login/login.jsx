@@ -8,7 +8,7 @@ const Login = () => {
   const [email, setEmail] = useState(''); 
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6000';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://interiitps.onrender.com';
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 

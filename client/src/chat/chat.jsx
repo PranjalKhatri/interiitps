@@ -14,7 +14,7 @@ function Chat() {
   const notificationTimeoutRef = useRef(null);
   const [file, setFile] = useState(null);
 
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6000';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://interiitps.onrender.com';
 
   function speak(val) {
     let utterance = new SpeechSynthesisUtterance(val);
