@@ -12,14 +12,12 @@ const compression = require("compression");
 // Initialize Express app
 const corsOptions = {
   origin: "https://interiitps-frontend.onrender.com",
+  credentials: true,
 };
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:3000', // Frontend's origin
-  credentials: true, // Allow sending cookies from frontend
-}));
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(cookies());
