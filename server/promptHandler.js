@@ -1,5 +1,5 @@
 const { geminiModel } = require("./config/genaimodel");
-const fs = require("fs");
+// const fs = require("fs");
 async function getResponseText(prompt) {
   const result = await geminiModel.generateContent(prompt);
   return result.response.text();
@@ -66,15 +66,44 @@ function fileToGenerativePart(buffer, mimeType) {
     },
   };
 }
+async function filePrompt (prompt, file, mimeType, res, finalHistory = []) {
 
-async function filePrompt(prompt,file,mimeType){
-  const imageParts = [fileToGenerativePart(file,mimeType)];
-  // console.log(imageParts);
-  const result= await geminiModel.generateContent([prompt,...imageParts]);
-  const response = await result.response;
-  console.log(response.text());
-  return response.text();
-}
+  console.log("Processing file prompt...");
+    try {
+      
+      const imageParts = [fileToGenerativePart(file, mimeType)];
+      console.log(file);
+
+      console.log(imageParts);
+      const result = await geminiModel.generateContentStream([prompt, ...imageParts]);
+      console.log("result : ",result);
+      let text = "";
+      for await (const chunk of result.stream) {
+        const chunkText = await chunk.text();
+        console.log("AI: ", chunkText);
+        res.write(JSON.stringify({ data: chunkText }));
+        res.flush();
+        text += chunkText;
+      }
+      console.log("text is : ",text);
+      return text;
+    } catch (err) {
+      console.log(err);
+      res.json({ success: false });
+    }
+};
+// const filePrompt = async (prompt, file, mimeType) => {
+//   console.log("hello");
+//   const imageParts = [fileToGenerativePart(file, mimeType)];
+
+//   // Call the generative model with the prompt and file parts
+//   const result = await geminiModel.generateContent([prompt, ...imageParts]);
+//   const response = await result.response;
+//   console.log(response.text());
+
+//   return response.text();
+// };
+
 
 module.exports = {
   getResponseText,

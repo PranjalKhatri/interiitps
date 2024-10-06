@@ -1,6 +1,5 @@
 const {
-  getResponse,
-  filePrompt,
+  getResponse,filePrompt
 } = require("../promptHandler.js");
 const geminiModel = require("../config/genaimodel.js");
 const Chat = require("../models/Chat.js");
@@ -196,28 +195,125 @@ const stream = async (req, res) => {
   });
 };
 
-const getAllChats = async (req, res) => {
-  const userID = "6700be9f3bff66d6fb71385a";
 
-  const chats = await Chat.find({ userId: userID });
-  console.log(chats);
-  res.json(chats);
-};
+// function fileToGenerativePart(buffer, mimeType) {
+//   console.log("Converting file to generative part...");
+//   return {
+//     inlineData: {
+//       data: buffer.toString('base64'),
+//       mimeType,
+//     },
+//   };
+// }
+
+
+
+
 
 const uploadFile = async (req, res) => {
+  console.log("Received request to upload file.");
+
+  // Check if a file has been uploaded
   if (!req.file) {
+    console.error("No file uploaded.");
     return res.status(400).send("No file uploaded.");
   }
 
-  // Get the file's buffer and mimetype
   const fileBuffer = req.file.buffer;
   const mimeType = req.file.mimetype;
-  console.log(fileBuffer);
-  // Call the function to convert the file
-  const response = await filePrompt(req.body.prompt, fileBuffer, mimeType);
-  // Respond with success
-  res.json({ response });
+  // console.log("Uploaded file buffer:", fileBuffer);
+  // console.log("Uploaded file MIME type:", mimeType);
+
+  // Set the response headers for streaming
+  // res.setHeader('Content-Type', 'application/json');
+  // res.flushHeaders(); // Flush the headers to start streaming
+
+  // Retrieve prompt and newChat status from the request body
+  const prompt = req.body.prompt;
+  console.log("Prompt is: ", prompt);
+  const newChat = req.body.newChat;
+  console.log("New chat status: ", newChat);
+  let history = [];
+
+  if (!newChat) {
+    const userID = "6700be9f3bff66d6fb71385a"; // Replace with actual user ID logic
+    try {
+      const oldChats = await getChat(userID);
+      history = oldChats || []; // Fallback to empty array if no old chats
+      console.log("Old chats retrieved: ", oldChats);
+    } catch (error) {
+      console.error("Error retrieving chat history:", error);
+      return res.status(500).json({ message: "Error retrieving chat history" });
+    }
+  }
+
+  // Format the history for the chat model
+  const finalHistory = history.map((item) => ({
+    role: item.role,
+    parts: [{ text: item.parts[0].text }],
+  }));
+
+  console.log("Final history for chat: ", finalHistory);
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  let modelChat = "";
+  // Start getting the response
+  filePrompt(prompt, fileBuffer, mimeType , res ,finalHistory).then(async (val) => {
+  // Added 'async' to use await inside
+  modelChat = val;
+  console.log("modelChat is: ", modelChat);
+  const userChat = new Chat({
+    userId: "6700be9f3bff66d6fb71385a",
+    role: "user",
+    parts: [{ text: prompt }],
+  });
+
+  const modelResponseChat = new Chat({
+    userId: "6700be9f3bff66d6fb71385a",
+    role: "model",
+    parts: [{ text: modelChat }],
+  });
+
+  // // Save the chats to the database
+  await userChat.save();
+  await modelResponseChat.save();
+
+  res.end();
+});
+
+  // Start a chat session with the prompt, file, and formatted history
+  // try {
+  //   await filePrompt(prompt, fileBuffer, mimeType, res, finalHistory);
+  // } catch (error) {
+  //   console.error("Error processing file:", error);
+  //   res.status(500).json({ success: false, error: "Error processing file." });
+  // }
 };
+
+// const uploadFile = async (req, res) => {
+//   // Check if a file has been uploaded
+//   if (!req.file) {
+//     return res.status(400).send("No file uploaded.");
+//   }
+
+//   const fileBuffer = req.file.buffer;
+//   const mimeType = req.file.mimetype;
+//   console.log(fileBuffer);
+
+//   try {
+//     const response = await filePrompt(req.body.prompt, fileBuffer, mimeType);
+//     // Respond with success
+//     res.json({ response });
+//   } catch (error) {
+//     console.error("Error processing file:", error);
+//     res.status(500).send("Error processing file.");
+//   }
+// };
+
+
 const deleteChat = async (req, res) => {
   const userID = req.params.userID;
   console.log(userID);
@@ -246,6 +342,18 @@ const deleteChat = async (req, res) => {
     });
   }
 };
+
+
+
+const getAllChats = async (req, res) => {
+  const userID = "6700be9f3bff66d6fb71385a";
+
+  const chats = await Chat.find({ userId: userID });
+  console.log(chats);
+  res.json({data : chats});
+};
+
+
 
 module.exports = {
   chat,

@@ -17,7 +17,10 @@ const corsOptions = {
 const app = express();
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
+// Body parser middleware
+app.use(bodyParser.json({ limit: '10mb' })); // Increase limit for JSON bodies
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true })); // Increase limit for URL-encoded bodies
 app.use(bodyParser.text());
 app.use(compression());
 // Initialize OpenAI
