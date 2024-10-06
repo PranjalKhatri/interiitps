@@ -80,11 +80,14 @@ function Chat() {
         formData.append("file", file);
         response = await fetch(`${backendUrl}/api/v1/chat/upload`, {
           method: 'POST',
+          credentials: 'include',
           body: formData,
+          
         });
       } else {
         response = await fetch(`${backendUrl}/api/v1/chat/`, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -92,6 +95,7 @@ function Chat() {
             prompt: question,
             newChat: false,
           }),
+          
         });
       }
 

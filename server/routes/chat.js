@@ -9,13 +9,13 @@ const upload = multer({
   });
   
 // Route for streaming
-router.post("/", stream);
-router.get("/", getAllChats);
+router.post("/",authenticateUser, stream);
+router.get("/",authenticateUser, getAllChats);
 
 // Route for file upload
-router.post('/upload', upload.single('file'), uploadFile);
+router.post('/upload', authenticateUser,upload.single('file'), uploadFile);
 
 // Route for deleting a chat
-router.delete("/:userID", deleteChat);
+router.delete("/:userID",authenticateUser, deleteChat);
 
 module.exports = router;
