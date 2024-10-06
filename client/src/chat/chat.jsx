@@ -65,7 +65,7 @@ function Chat() {
 
   const askQuestionStream = async (e) => {
     e.preventDefault();
-    if (!question.trim() && !ffile) {
+    if (!question.trim() && !file) {
       alert('Please enter a question or upload a file.');
       return;
     }

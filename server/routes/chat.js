@@ -12,7 +12,6 @@ const upload = multer({
 router.post("/", stream);
 router.get("/", getAllChats);
 
-
 // Route for file upload
 router.post('/upload', upload.single('file'), uploadFile);
 
