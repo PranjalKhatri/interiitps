@@ -1,15 +1,14 @@
 {
   "name": "inter-iit-bootcamp-dev-task",
   "version": "1.0.0",
-  "description": "- Clone the repository\r - To start client, run the following commands\r ```bash\r cd client\r npm install\r npm start\r ```\r - To start server, run the following commands\r ```bash\r cd server\r npm install\r npx nodemon index.js\r ```",
+  "description": "A chat bot using Gemini Api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install-server": "cd backend && npm install",
-    "start-server": "cd backend && node app.js",
-    "install-client": "cd client && npm install",
-    "build-client": "cd client && npm run build",
-    "start-client": "cd client && npm run start"
+      "install-server":"cd server && npm install",
+      "start-server":"cd server && node index.js",
+      "install-client":"cd client && npm install",
+      "build-client":"cd client && npm run build",
+      "start-client":"cd client && npm run start"
   },
   "keywords": [],
   "author": "",
