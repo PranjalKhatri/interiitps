@@ -10,8 +10,12 @@ const connectToDb = require("./config/db_config");
 const compression = require("compression");
 
 // Initialize Express app
+const corsOptions = {
+  origin: "https://interiitps-frontend.onrender.com",
+};
+
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // Body parser middleware
