@@ -5,7 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 const chat = require("./routes/chat");
 const userRoutes = require("./routes/user");
-
+const cookies = require('cookie-parser');
 const connectToDb = require("./config/db_config");
 const compression = require("compression");
 
@@ -15,11 +15,15 @@ const corsOptions = {
 };
 
 const app = express();
+
 app.use(cors({
   origin: 'http://localhost:3000', // Frontend's origin
   credentials: true, // Allow sending cookies from frontend
 }));
+
 app.use(bodyParser.json());
+app.use(cookies());
+
 
 // Body parser middleware
 app.use(bodyParser.json({ limit: '10mb' })); // Increase limit for JSON bodies

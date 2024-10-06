@@ -38,7 +38,7 @@ const chat = async (req, res) => {
   let history = [];
 
   if (!newChat) {
-    const userID = "6700be9f3bff66d6fb71385a";
+    const userID = req.user.userId;
     try {
       const oldChats = await getChat(userID);
       history = oldChats;
@@ -76,13 +76,13 @@ const chat = async (req, res) => {
     console.log("AI: ", text);
 
     const userChat = new Chat({
-      userId: "6700be9f3bff66d6fb71385a",
+      userId: req.user.userId,
       role: "user",
       parts: [{ text: prompt }],
     });
 
     const modelChat = new Chat({
-      userId: "6700be9f3bff66d6fb71385a",
+      userId: req.user.userId,
       role: "model",
       parts: [{ text: text }],
     });
@@ -144,7 +144,7 @@ const chat = async (req, res) => {
 // };
 
 const stream = async (req, res) => {
-  const userId = "6700be9f3bff66d6fb71385a";
+  const userId =req.user.userId;
   console.log(userId);
   const newChat = req.body.newChat;
   let history = [];
@@ -236,7 +236,7 @@ const uploadFile = async (req, res) => {
   let history = [];
 
   if (!newChat) {
-    const userID = "6700be9f3bff66d6fb71385a"; // Replace with actual user ID logic
+    const userID =req.user.userId; // Replace with actual user ID logic
     try {
       const oldChats = await getChat(userID);
       history = oldChats || []; // Fallback to empty array if no old chats
@@ -266,13 +266,13 @@ const uploadFile = async (req, res) => {
   modelChat = val;
   console.log("modelChat is: ", modelChat);
   const userChat = new Chat({
-    userId: "6700be9f3bff66d6fb71385a",
+    userId: req.user.userId,
     role: "user",
     parts: [{ text: prompt }],
   });
 
   const modelResponseChat = new Chat({
-    userId: "6700be9f3bff66d6fb71385a",
+    userId: req.user.userId,
     role: "model",
     parts: [{ text: modelChat }],
   });
@@ -346,14 +346,12 @@ const deleteChat = async (req, res) => {
 
 
 const getAllChats = async (req, res) => {
-  const userID = "6700be9f3bff66d6fb71385a";
+  const userID = req.user.userId;
 
   const chats = await Chat.find({ userId: userID });
   console.log(chats);
   res.json({data : chats});
 };
-
-
 
 module.exports = {
   chat,

@@ -19,7 +19,6 @@ const Login = () => {
     console.log('Username:', username); // Debugging log
     console.log('Email:', email); // Debugging log (only on sign up)
     console.log('Is Sign Up:', isSignUp); // Debugging log
-
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -27,7 +26,7 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-        // credentials: 'include', // Include cookies with the request
+        credentials: 'include', // Include cookies with the request
       });
 
       console.log('Response Status:', response.status); // Log response status
