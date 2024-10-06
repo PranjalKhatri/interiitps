@@ -15,7 +15,10 @@ const corsOptions = {
 };
 
 const app = express();
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: 'http://localhost:3000', // Frontend's origin
+  credentials: true, // Allow sending cookies from frontend
+}));
 app.use(bodyParser.json());
 
 // Body parser middleware

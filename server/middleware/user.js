@@ -1,10 +1,11 @@
-const User = require("../models/User");
+// const User = require("../models/User");
 const logger = require("../utils/logger");
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const authenticateUser = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  // const token = req.headers.authorization?.split(" ")[1];
+  const token = req.cookies.token; // Access token from the cookie
   if (!token) {
     return res.status(401).json({ error: "Unauthorized access" });
   }
