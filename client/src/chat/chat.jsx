@@ -4,6 +4,10 @@ import showdown from 'showdown';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrophone, faMicrophoneSlash, faPaperPlane, faTrash, faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
+import { faCopy } from '@fortawesome/free-regular-svg-icons'
+
 
 function Chat() {
   const [question, setQuestion] = useState('');
@@ -13,8 +17,29 @@ function Chat() {
   const chatEndRef = useRef(null);
   const notificationTimeoutRef = useRef(null);
   const [file, setFile] = useState(null);
+  const [username, setUsername] = useState('');
+
+
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6000';
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const response = await axios.get(`${backendUrl}/api/v1/users`, {
+          withCredentials: true,
+        });
+        console.log(response.data.username);
+        setUsername(response.data.username);
+      } catch (error) {
+        // alert('login again!');
+        console.error('Error fetching username:', error);
+      }
+    };
+
+    fetchUsername();
+  }, [backendUrl]);
+
 
   function speak(val) {
     let utterance = new SpeechSynthesisUtterance(val);
@@ -23,6 +48,8 @@ function Chat() {
     utterance.voice = selectedVoice;
     speechSynthesis.speak(utterance);
   }
+
+
 
   // Speech recognition hooks
   const { transcript, resetTranscript, listening } = useSpeechRecognition();
@@ -46,6 +73,7 @@ function Chat() {
     SpeechRecognition.stopListening();
   };
 
+
   const codeHighlightExtension = () => {
     return [
       {
@@ -63,6 +91,10 @@ function Chat() {
 
   const converter = new showdown.Converter({ extensions: [codeHighlightExtension] });
 
+
+
+
+  ///
   const askQuestionStream = async (e) => {
     e.preventDefault();
     if (!question.trim() && !file) {
@@ -82,7 +114,7 @@ function Chat() {
           method: 'POST',
           credentials: 'include',
           body: formData,
-          
+
         });
       } else {
         response = await fetch(`${backendUrl}/api/v1/chat/`, {
@@ -95,7 +127,7 @@ function Chat() {
             prompt: question,
             newChat: false,
           }),
-          
+
         });
       }
 
@@ -166,7 +198,9 @@ function Chat() {
   const deleteChat = async () => {
     setLoading(true);
     try {
-      const response = await axios.delete(`${backendUrl}/api/v1/chat/6700be9f3bff66d6fb71385a`);
+      const response = await axios.delete(`${backendUrl}/api/v1/chat/`, {
+        withCredentials: true,
+      });
       if (response.status === 200) {
         setConversation([]);
         alert('Chats deleted successfully!');
@@ -227,18 +261,39 @@ function Chat() {
 
   return (
     <>
-      <div className="h-auto min-h-[800px] w-full bg-gray-900 text-white flex items-center justify-center">
-        <div className="w-[60%] p-8 flex flex-col bg-gray-900 h-auto">
+      <div className="h-auto min-h-[100vh] w-[100%] bg-[#060f2b] text-white flex items-center justify-center">
+        <div className="w-[60%] p-8 flex flex-col bg-[#060f2b] h-auto">
           {copyNotification && (
-            <div className="absolute top-0 right-0 bg-green-500 text-white p-2 rounded-md mt-4 mr-4">
+            <div className="absolute top-10 right-0 bg-green-500 text-white p-2 rounded-md mt-4 mr-4">
               Copied!
             </div>
           )}
-          <h1 className="text-3xl font-extrabold text-center mb-4">Chat with VenusX</h1>
+          <a className=" absolute top-6 left-6 w-fit text-white" href="/">
+            <div className="flex w-fit items-center lg:pl-0 lg:pt-0 xl:pt-0">
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 320 512"
+                className="mr-3 h-[13px] w-[8px] text-white dark:text-white"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path>
+              </svg>
+              <p className="ml-0 text-sm text-white">Back to the website</p>
+            </div>
+          </a>
+
+          <div className="absolute top-6 right-6 text-base font-semibold text-white">
+            Welcome, {username}!
+          </div>
+          <h1 className="text-4xl font-extrabold text-center mb-4">Chat with VenusX</h1>
           <div className="flex-1 overflow-y-auto bg-gray-800 rounded-lg p-4 shadow-lg mb-4 min-h-[300px] flex flex-col">
             {conversation.map((msg, index) => (
               <div key={index} className="mb-2 flex items-start">
-                <strong className={`mr-2 ${msg.role === 'user' ? 'text-blue-400' : 'text-orange-400'}`}>
+                <strong className={`mr-2 ${msg.role === 'user' ? 'text-blue-600' : 'text-red-600'}`}>
                   {msg.role === 'user' ? 'You' : 'GPT-4'}:
                 </strong>
                 <div
@@ -247,27 +302,32 @@ function Chat() {
                 />
                 {msg.role === 'bot' && (
                   <>
-                    <button
+                    {/* <button
                       onClick={() => {
                         copyToClipboard(msg.content.replace(/<[^>]*>/g, ''));
                       }}
                       className="ml-2 bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600 text-sm"
                     >
                       Copy Response
-                    </button>
-                    <button
+                    </button> */}
+                    <div onClick={() => {
+                      copyToClipboard(msg.content.replace(/<[^>]*>/g, ''));
+                    }} className='hover:cursor-pointer h-3 w-3 mr-2 text-base text-white'><FontAwesomeIcon className="text-[#828282]" icon={faCopy} /></div>
+
+                    <div onClick={() => speak(msg.content.replace(/<[^>]*>/g, ''))} className=' text-base hover:cursor-pointer h-3 w-3 mr-2 text-white'><FontAwesomeIcon className="text-[#828282]" icon={faVolumeHigh} /></div>
+                    {/* <button
                       onClick={() => speak(msg.content.replace(/<[^>]*>/g, ''))}
                       className="ml-2 bg-purple-500 text-white py-1 px-2 rounded-md hover:bg-purple-600 text-sm"
                     >
                       Speak Response
-                    </button>
+                    </button> */}
                   </>
                 )}
               </div>
             ))}
             <div ref={chatEndRef} />
           </div>
-          <div className="flex space-x-2 mb-4">
+          <div className="flex space-x-2 mb-4 items-center">
             <input
               type="text"
               value={question}
@@ -275,39 +335,89 @@ function Chat() {
               placeholder="Type your question or dictate..."
               className="flex-1 p-2 rounded-lg border border-gray-700 bg-gray-800 focus:outline-none focus:border-blue-500"
             />
-            <button
+            {/* <button
               onClick={askQuestionStream}
               className={`bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={loading}
             >
               {loading ? 'Loading...' : 'Send'}
-            </button>
+            </button> */}
+
+
+
+
             {/* Speech recognition buttons */}
-            <button
+            {/* <button
               onClick={startListening}
               className={`bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 ${listening ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={listening}
             >
               🎤 Start
-            </button>
-            <button
+            </button> */}
+
+
+            <div
+              onClick={askQuestionStream}
+              disabled={loading}
+              className={` hover:cursor-pointer hover:opacity-70 flex justify-center items-center text-white h-10 w-10 rounded-full bg-[#0e2054] ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                } `}
+            >
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </div>
+
+
+            <div
+              onClick={startListening}
+              disabled={listening}
+              className={`flex justify-center items-center text-white h-10 w-10 rounded-full bg-[#0e2054] ${listening ? 'opacity-50 cursor-not-allowed' : ''
+                } hover:cursor-pointer hover:opacity-70`}
+            >
+              <FontAwesomeIcon icon={faMicrophone} />
+            </div>
+
+
+
+            <div
+              onClick={stopListening}
+              disabled={!listening}
+              className={`hover:cursor-pointer flex justify-center items-center text-white h-10 w-10 rounded-full bg-[#0e2054] ${!listening ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <FontAwesomeIcon
+                className={`${!listening ? 'opacity-50 cursor-not-allowed' : ''}`}
+                icon={faMicrophoneSlash} />
+            </div>
+
+            {/* <button
               onClick={stopListening}
               className={`bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 ${!listening ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={!listening}
             >
               Stop
-            </button>
+            </button> */}
           </div>
-          <div className="mb-4">
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="border border-gray-700 bg-gray-800 text-white py-2 px-4 rounded-lg"
-            />
-          </div>
-          <button onClick={deleteChat} className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">
-            Delete Chat
-          </button>
+
+          <>
+            <div className="mb-4 flex items-center justify-between">
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="border border-gray-700 bg-gray-800 text-white py-2 px-4 rounded-lg"
+              />
+
+              {/* <button onClick={deleteChat} className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"> */}
+                
+              {/* </button> */}
+
+              <div onClick={deleteChat}  className='h-10 w-20 flex justify-center items-center rounded-full hover:cursor-pointer hover:bg-red-600  bg-red-500 text-white'><FontAwesomeIcon
+                className='text-white'
+                icon={faTrash} /> <p className='font-semibold ml-1'>Chat</p>
+              </div>
+
+
+            </div>
+
+          </>
+
         </div>
       </div>
     </>

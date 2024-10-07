@@ -315,18 +315,15 @@ const uploadFile = async (req, res) => {
 
 
 const deleteChat = async (req, res) => {
-  const userID = req.params.userID;
+  const userID = req.user.userId;
   console.log(userID);
   try {
     const deletedChats = await Chat.deleteMany({ userId: userID });
-
+    console.log(deletedChats);
     if (deletedChats.deletedCount > 0) {
       return res.status(200).json({
         status: "success",
         message: "Chats deleted successfully!",
-        data: {
-          deletedCount: deletedChats.deletedCount,
-        },
       });
     } else {
       return res.status(404).json({

@@ -16,6 +16,6 @@ router.get("/",authenticateUser, getAllChats);
 router.post('/upload', authenticateUser,upload.single('file'), uploadFile);
 
 // Route for deleting a chat
-router.delete("/:userID",authenticateUser, deleteChat);
+router.delete("/",authenticateUser, deleteChat);
 
 module.exports = router;
