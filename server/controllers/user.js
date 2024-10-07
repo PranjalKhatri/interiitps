@@ -65,14 +65,16 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Get all users
-const getAllUsers = async (req, res) => {
+// Get user
+const getUser = async (req, res) => {
   try {
-    const users = await User.find(); // Fetch all users
-    console.log("Fetched users:", users); // Debugging log
-    res.json({ data: users });
+    const userID = req.user.userId
+    const user = await User.findOne({ _id : userID }); 
+    console.log("Fetched users:", user); 
+    console.log(user.username);
+    res.status(200).json({ username: user.username });
   } catch (err) {
-    logger.error(err); // Log the error for debugging
+    logger.error(err); 
     res.status(500).json({ error: "Server error, unable to fetch users" });
   }
 };
@@ -80,5 +82,5 @@ const getAllUsers = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
-  getAllUsers
+  getUser
 };
